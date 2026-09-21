@@ -1,0 +1,1514 @@
+{
+  "info": {
+    "_postman_id": "b98d617f-0b11-4956-bd94-465c9609af60",
+    "name": "College Admission Eligibility API",
+    "description": "High-level functional and validation coverage for the College Admission Eligibility API. Set collection variable baseUrl to http://localhost:8000. The Database Unavailable request requires SQL Server to be stopped manually before execution.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "39505346"
+  },
+  "item": [
+    {
+      "name": "01 - System",
+      "item": [
+        {
+          "name": "Root",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Response is JSON\", function () { pm.response.to.be.json; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Health is ok\", function () { const j = pm.response.json(); pm.expect(j.status).to.eql(\"ok\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "health"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Courses",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Courses response is JSON\", function () { pm.response.to.be.json; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/courses",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "courses"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "02 - Engineering",
+      "item": [
+        {
+          "name": "CSE - Eligible",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Student is eligible\", function () { const j = pm.response.json(); pm.expect(j.eligible).to.eql(true); });",
+                  "pm.test(\"Database persistence succeeded\", function () { const j = pm.response.json(); pm.expect(j.persisted_to_database).to.eql(true); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"age\": 18,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 95\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 91\n    }\n  ],\n  \"qualification_exams\": {\n    \"JEE\": {\n      \"qualified\": true,\n      \"score\": 88.5\n    }\n  },\n  \"desired_course\": \"Computer Science Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CSE - JEE Not Qualified",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Student is not eligible\", function () { const j = pm.response.json(); pm.expect(j.eligible).to.eql(false); });",
+                  "pm.test(\"Reason mentions JEE\", function () { const j = pm.response.json(); pm.expect(JSON.stringify(j.reasons)).to.include(\"JEE\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"age\": 18,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 92\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 85\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 88\n    }\n  ],\n  \"qualification_exams\": {\n    \"JEE\": {\n      \"qualified\": false,\n      \"score\": 60\n    }\n  },\n  \"desired_course\": \"Computer Science Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CSE - JEE Missing",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Student is not eligible\", function () { const j = pm.response.json(); pm.expect(j.eligible).to.eql(false); });",
+                  "pm.test(\"Reason mentions JEE result\", function () { const j = pm.response.json(); pm.expect(JSON.stringify(j.reasons)).to.include(\"JEE\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"age\": 18,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 92\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 85\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 88\n    }\n  ],\n  \"qualification_exams\": {},\n  \"desired_course\": \"Computer Science Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "CSE - Below Cutoff, Civil Recommended",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"CSE is not eligible\", function () { const j = pm.response.json(); pm.expect(j.eligible).to.eql(false); });",
+                  "pm.test(\"Civil Engineering is recommended\", function () { const j = pm.response.json(); pm.expect(j.recommended_courses).to.include(\"Civil Engineering\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rohan Mehta\",\n  \"age\": 18,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 68\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 67\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 70\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 80\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 85\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 90\n    }\n  ],\n  \"qualification_exams\": {\n    \"JEE\": {\n      \"qualified\": true,\n      \"score\": 76\n    }\n  },\n  \"desired_course\": \"Computer Science Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mechanical - Exact 70% Cutoff",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Exact cutoff is eligible\", function () { const j = pm.response.json(); pm.expect(j.eligible).to.eql(true); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rahul Patel\",\n  \"age\": 19,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 70\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 70\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 70\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 75\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 80\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 85\n    }\n  ],\n  \"qualification_exams\": {\n    \"JEE\": {\n      \"qualified\": true,\n      \"score\": 75\n    }\n  },\n  \"desired_course\": \"Mechanical Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Electrical - Mathematics Missing",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Student is not eligible\", function () { const j = pm.response.json(); pm.expect(j.eligible).to.eql(false); });",
+                  "pm.test(\"Reason mentions Mathematics\", function () { const j = pm.response.json(); pm.expect(JSON.stringify(j.reasons)).to.include(\"Mathematics\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rahul Patel\",\n  \"age\": 19,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 85\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Biology\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 80\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 85\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 88\n    }\n  ],\n  \"qualification_exams\": {\n    \"JEE\": {\n      \"qualified\": true,\n      \"score\": 80\n    }\n  },\n  \"desired_course\": \"Electrical Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "03 - Medicine",
+      "item": [
+        {
+          "name": "MBBS - Eligible",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"MBBS eligible\", function () { const j = pm.response.json(); pm.expect(j.eligible).to.eql(true); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Priya Sharma\",\n  \"age\": 18,\n  \"gender\": \"Female\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 86\n    },\n    {\n      \"subject\": \"Biology\",\n      \"marks\": 92\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 85\n    },\n    {\n      \"subject\": \"Psychology\",\n      \"marks\": 80\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 90\n    }\n  ],\n  \"qualification_exams\": {\n    \"NEET\": {\n      \"qualified\": true,\n      \"score\": 91\n    }\n  },\n  \"desired_course\": \"MBBS\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "MBBS - Below Cutoff, Alternatives Recommended",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"MBBS is not eligible\", function () { const j = pm.response.json(); pm.expect(j.eligible).to.eql(false); });",
+                  "pm.test(\"At least one medical alternative is recommended\", function () { const j = pm.response.json(); pm.expect(j.recommended_courses.length).to.be.above(0); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Neha Kapoor\",\n  \"age\": 18,\n  \"gender\": \"Female\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 81\n    },\n    {\n      \"subject\": \"Biology\",\n      \"marks\": 83\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 85\n    },\n    {\n      \"subject\": \"Psychology\",\n      \"marks\": 80\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 88\n    }\n  ],\n  \"qualification_exams\": {\n    \"NEET\": {\n      \"qualified\": true,\n      \"score\": 84\n    }\n  },\n  \"desired_course\": \"MBBS\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "MBBS - NEET Not Qualified",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Student is not eligible\", function () { const j = pm.response.json(); pm.expect(j.eligible).to.eql(false); });",
+                  "pm.test(\"Reason mentions NEET\", function () { const j = pm.response.json(); pm.expect(JSON.stringify(j.reasons)).to.include(\"NEET\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Neha Kapoor\",\n  \"age\": 18,\n  \"gender\": \"Female\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 95\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 92\n    },\n    {\n      \"subject\": \"Biology\",\n      \"marks\": 96\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 85\n    },\n    {\n      \"subject\": \"Psychology\",\n      \"marks\": 80\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 88\n    }\n  ],\n  \"qualification_exams\": {\n    \"NEET\": {\n      \"qualified\": false,\n      \"score\": 50\n    }\n  },\n  \"desired_course\": \"MBBS\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "BPT - Exact 70% Cutoff",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Exact cutoff is eligible\", function () { const j = pm.response.json(); pm.expect(j.eligible).to.eql(true); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Simran Rao\",\n  \"age\": 19,\n  \"gender\": \"Female\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 70\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 70\n    },\n    {\n      \"subject\": \"Biology\",\n      \"marks\": 70\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 80\n    },\n    {\n      \"subject\": \"Psychology\",\n      \"marks\": 75\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 85\n    }\n  ],\n  \"qualification_exams\": {\n    \"NEET\": {\n      \"qualified\": true,\n      \"score\": 72\n    }\n  },\n  \"desired_course\": \"BPT (Physiotherapy)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "04 - Commerce",
+      "item": [
+        {
+          "name": "B.Com - Eligible",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"B.Com eligible\", function () { const j = pm.response.json(); pm.expect(j.eligible).to.eql(true); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Karan Shah\",\n  \"age\": 18,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Accountancy\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Business Studies\",\n      \"marks\": 84\n    },\n    {\n      \"subject\": \"Economics\",\n      \"marks\": 86\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 90\n    }\n  ],\n  \"qualification_exams\": {},\n  \"desired_course\": \"B.Com (Bachelor of Commerce)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "BBA - Economics Missing",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Student is not eligible\", function () { const j = pm.response.json(); pm.expect(j.eligible).to.eql(false); });",
+                  "pm.test(\"Reason mentions Economics\", function () { const j = pm.response.json(); pm.expect(JSON.stringify(j.reasons)).to.include(\"Economics\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Karan Shah\",\n  \"age\": 18,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Accountancy\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Business Studies\",\n      \"marks\": 84\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 86\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 80\n    }\n  ],\n  \"qualification_exams\": {},\n  \"desired_course\": \"BBA (Bachelor of Business Administration)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "05 - Humanities",
+      "item": [
+        {
+          "name": "BA Psychology - Eligible",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"BA Psychology eligible\", function () { const j = pm.response.json(); pm.expect(j.eligible).to.eql(true); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ananya Singh\",\n  \"age\": 18,\n  \"gender\": \"Female\",\n  \"subjects\": [\n    {\n      \"subject\": \"Psychology\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"Sociology\",\n      \"marks\": 86\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"History\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Geography\",\n      \"marks\": 80\n    },\n    {\n      \"subject\": \"Political Science\",\n      \"marks\": 84\n    }\n  ],\n  \"qualification_exams\": {},\n  \"desired_course\": \"BA in Psychology\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "BA History - Geography Missing",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 200\", function () { pm.response.to.have.status(200); });",
+                  "pm.test(\"Student is not eligible\", function () { const j = pm.response.json(); pm.expect(j.eligible).to.eql(false); });",
+                  "pm.test(\"Reason mentions Geography\", function () { const j = pm.response.json(); pm.expect(JSON.stringify(j.reasons)).to.include(\"Geography\"); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ananya Singh\",\n  \"age\": 18,\n  \"gender\": \"Female\",\n  \"subjects\": [\n    {\n      \"subject\": \"History\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"Political Science\",\n      \"marks\": 86\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Psychology\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Sociology\",\n      \"marks\": 80\n    },\n    {\n      \"subject\": \"Economics\",\n      \"marks\": 84\n    }\n  ],\n  \"qualification_exams\": {},\n  \"desired_course\": \"BA in History\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "06 - Validation",
+      "item": [
+        {
+          "name": "Invalid Name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 422\", function () { pm.response.to.have.status(422); });",
+                  "pm.test(\"Validation response is JSON\", function () { pm.response.to.be.json; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav123\",\n  \"age\": 18,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 95\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 91\n    }\n  ],\n  \"qualification_exams\": {},\n  \"desired_course\": \"Computer Science Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Age Below Minimum",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 422\", function () { pm.response.to.have.status(422); });",
+                  "pm.test(\"Validation response is JSON\", function () { pm.response.to.be.json; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"age\": 16,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 95\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 91\n    }\n  ],\n  \"qualification_exams\": {},\n  \"desired_course\": \"Computer Science Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Age Above Maximum",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 422\", function () { pm.response.to.have.status(422); });",
+                  "pm.test(\"Validation response is JSON\", function () { pm.response.to.be.json; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"age\": 26,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 95\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 91\n    }\n  ],\n  \"qualification_exams\": {},\n  \"desired_course\": \"Computer Science Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid Gender",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 422\", function () { pm.response.to.have.status(422); });",
+                  "pm.test(\"Validation response is JSON\", function () { pm.response.to.be.json; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"age\": 18,\n  \"gender\": \"male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 95\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 91\n    }\n  ],\n  \"qualification_exams\": {},\n  \"desired_course\": \"Computer Science Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Marks Above 100",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 422\", function () { pm.response.to.have.status(422); });",
+                  "pm.test(\"Validation response is JSON\", function () { pm.response.to.be.json; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"age\": 18,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 101\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 95\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 91\n    }\n  ],\n  \"qualification_exams\": {},\n  \"desired_course\": \"Computer Science Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Marks Below 0",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 422\", function () { pm.response.to.have.status(422); });",
+                  "pm.test(\"Validation response is JSON\", function () { pm.response.to.be.json; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"age\": 18,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": -1\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 95\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 91\n    }\n  ],\n  \"qualification_exams\": {},\n  \"desired_course\": \"Computer Science Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Only Five Subjects",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 422\", function () { pm.response.to.have.status(422); });",
+                  "pm.test(\"Validation response is JSON\", function () { pm.response.to.be.json; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"age\": 18,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 95\n    }\n  ],\n  \"qualification_exams\": {},\n  \"desired_course\": \"Computer Science Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Duplicate Subjects Case Insensitive",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 422\", function () { pm.response.to.have.status(422); });",
+                  "pm.test(\"Validation response is JSON\", function () { pm.response.to.be.json; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"age\": 18,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"physics\",\n      \"marks\": 80\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 95\n    }\n  ],\n  \"qualification_exams\": {},\n  \"desired_course\": \"Computer Science Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Unsupported Course",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 422\", function () { pm.response.to.have.status(422); });",
+                  "pm.test(\"Validation response is JSON\", function () { pm.response.to.be.json; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"age\": 18,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 95\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 91\n    }\n  ],\n  \"qualification_exams\": {},\n  \"desired_course\": \"Aeronautical Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Unsupported Qualification Exam",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 422\", function () { pm.response.to.have.status(422); });",
+                  "pm.test(\"Validation response is JSON\", function () { pm.response.to.be.json; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"age\": 18,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 95\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 91\n    }\n  ],\n  \"qualification_exams\": {\n    \"GATE\": {\n      \"qualified\": true,\n      \"score\": 90\n    }\n  },\n  \"desired_course\": \"Computer Science Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Qualification Score Above 100",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 422\", function () { pm.response.to.have.status(422); });",
+                  "pm.test(\"Validation response is JSON\", function () { pm.response.to.be.json; });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"age\": 18,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 95\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 91\n    }\n  ],\n  \"qualification_exams\": {\n    \"JEE\": {\n      \"qualified\": true,\n      \"score\": 150\n    }\n  },\n  \"desired_course\": \"Computer Science Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Extra Field Is Rejected",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 422\", function () { pm.response.to.have.status(422); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"age\": 18,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 95\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 91\n    }\n  ],\n  \"qualification_exams\": {},\n  \"desired_course\": \"Computer Science Engineering\",\n  \"college_name\": \"Test College\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Missing Required Name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 422\", function () { pm.response.to.have.status(422); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"age\": 18,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 95\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 91\n    }\n  ],\n  \"qualification_exams\": {},\n  \"desired_course\": \"Computer Science Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Invalid Age Data Type",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 422\", function () { pm.response.to.have.status(422); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"age\": \"eighteen\",\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 95\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 91\n    }\n  ],\n  \"qualification_exams\": {},\n  \"desired_course\": \"Computer Science Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "07 - HTTP and Infrastructure Errors",
+      "item": [
+        {
+          "name": "Wrong Method - GET Eligibility",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 405\", function () { pm.response.to.have.status(405); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Unknown Endpoint",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 404\", function () { pm.response.to.have.status(404); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/unknown",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "unknown"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Database Unavailable - Manual Scenario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status is 503 when DB is unavailable\", function () { pm.response.to.have.status(503); });"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Aarav Sharma\",\n  \"age\": 18,\n  \"gender\": \"Male\",\n  \"subjects\": [\n    {\n      \"subject\": \"Physics\",\n      \"marks\": 82\n    },\n    {\n      \"subject\": \"Chemistry\",\n      \"marks\": 78\n    },\n    {\n      \"subject\": \"Mathematics\",\n      \"marks\": 90\n    },\n    {\n      \"subject\": \"English\",\n      \"marks\": 88\n    },\n    {\n      \"subject\": \"Computer Science\",\n      \"marks\": 95\n    },\n    {\n      \"subject\": \"Physical Education\",\n      \"marks\": 91\n    }\n  ],\n  \"qualification_exams\": {\n    \"JEE\": {\n      \"qualified\": true,\n      \"score\": 88\n    }\n  },\n  \"desired_course\": \"Computer Science Engineering\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/eligibility",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "eligibility"
+              ]
+            },
+            "description": "MANUAL PRECONDITION: stop SQL Server before running this request: `docker compose stop sqlserver`. After the test, restore it with `docker compose start sqlserver`. If SQL Server is running, this request is expected to return 200 instead."
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    }
+  ]
+}
