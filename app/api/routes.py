@@ -10,7 +10,7 @@ from fastapi import APIRouter, HTTPException, status
 from fastapi.concurrency import run_in_threadpool
 
 from app.core.course_catalog import COURSE_CATALOG
-from app.db.sql_server import save_assessment
+from app.db.sql_server import save_admission_record
 from app.models.schemas import AdmissionRequest, AdmissionResponse
 from app.services.eligibility import (
     calculate_overall_percentage,
@@ -73,7 +73,7 @@ async def check_eligibility(student: AdmissionRequest) -> AdmissionResponse:
         # pyodbc is synchronous, so run DB I/O in FastAPI's thread pool.
         # This prevents a database call from blocking the event loop and allows
         # multiple API requests to be served concurrently.
-        await run_in_threadpool(save_assessment, request_id, input_dict, output_dict)
+        await run_in_threadpool(save_admission_record, request_id, input_dict, output_dict)
         response.persisted_to_database = True
     except Exception as exc:
         logger.exception("Database persistence failed | request_id=%s", request_id)

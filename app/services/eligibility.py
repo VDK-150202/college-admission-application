@@ -32,7 +32,24 @@ def calculate_overall_percentage(student: AdmissionRequest) -> float:
 
 
 def evaluate_course(student: AdmissionRequest, course_name: str) -> CourseEvaluation:
-    """Evaluate a student against one course's predefined criteria."""
+    """
+        Evaluate a student against one course's predefined criteria.
+        The evaluation checks the course-specific 12th-grade subject combination,
+        calculates the average across only those required subjects, applies the
+        configured cutoff when one exists, and verifies any required qualification
+        exam such as JEE or NEET.
+
+        Args:
+            student: Validated admission request containing the student's subjects,
+                marks, qualification exam results, and desired course information.
+            course_name: Exact course name present in ``COURSE_CATALOG``.
+
+        Returns:
+            A ``CourseEvaluation`` containing whether the student is eligible,
+            store computed required-subject average (or None if not applicable), and a list of
+            human-readable reasons explaining the result.
+        
+    """
     criteria = COURSE_CATALOG[course_name]
     frame = _subject_frame(student)
 

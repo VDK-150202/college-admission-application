@@ -72,7 +72,7 @@ def initialize_database() -> None:
     logger.info("SQL Server database initialization completed.")
 
 
-def save_assessment(request_id: str, input_data: dict, output_data: dict) -> None:
+def save_admission_record(request_id: str, input_data: dict, output_data: dict) -> None:
     """Persist one request/response pair using a parameterized INSERT."""
     sql = """
     INSERT INTO dbo.AdmissionAssessments
